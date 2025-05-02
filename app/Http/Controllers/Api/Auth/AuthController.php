@@ -27,14 +27,13 @@ class AuthController extends Controller
         return response()->json($validation->errors(), 422);
     }
 
-    // Check for existing user by email or phone
     $userExists = User::where('email', $request->email)
                       ->orWhere('phone', $request->phone)
                       ->first();
 
-    $code = rand(100000, 999999); // Email verification code
+    $code = rand(100000, 999999);
 
-    // If user exists and is not verified, update the record
+
     if ($userExists) {
         if ($userExists->is_email_verified == false) {
             $userExists->update([
@@ -50,7 +49,7 @@ class AuthController extends Controller
             Mail::to($userExists->email)->send(new EmailVerificationCode($code, $userExists->name));
 
             return response()->json([
-                'message' => 'Go and check your email to verify your account',
+                'message' => 'Go and check your email to verify your account , the code will expire after 5 min',
             ]);
         } elseif($userExists->is_email_verified == true) {
             return response()->json([
@@ -72,7 +71,7 @@ class AuthController extends Controller
     Mail::to($user->email)->send(new EmailVerificationCode($code, $user->name));
 
     return response()->json([
-        'message' => 'Go and check your email to verify your account',
+        'message' => 'Go and check your email to verify your account , the code will expire after 5 min',
     ]);
 }
 
